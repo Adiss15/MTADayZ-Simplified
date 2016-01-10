@@ -22,7 +22,7 @@ outputDebugString ( "MTA:DayZ Simplified | config_s loaded" )
 	shownInfos["noradio"] = "You have no Radio Device!"
 	
 	--//Variables to server-side\\
-    gameplayVariables = {}
+ gameplayVariables = {}
 	gameplayVariables["zombieblood"] = 1 -- Zombie Blood/Health - DEFAULT: 6000
 	gameplayVariables["foodrestore"] = math.random(40,100) -- Amount of hunger to be restored when eating - DEFAULT: math.random(40,100) - FOR FULL RESTORE, JUST WRITE 100
 	gameplayVariables["thirstrestore"] = math.random(40,100) -- Amount of hunger to be restored when drinking - DEFAULT: math.random(40,100) - FOR FULL RESTORE, JUST WRITE 100
@@ -38,6 +38,77 @@ outputDebugString ( "MTA:DayZ Simplified | config_s loaded" )
     -- //Backup setings\\
 	gameplayVariables["backupenabled"] = true -- Whether or not backup should be enabled. Backup = saves all tents, accounts & vehicles. - DEFAULT: true - Set to false to disable backup.
 	gameplayVariables["backupinterval"] = 86400000 -- Number of milliseconds that should elapse before backup. Minimum: 50. - 1000 milliseconds = 1 second. - DEFAULT: 86400000 (= 24 hours)
+
+
+    -- Vehicles tables
+	
+
+
+vehicleAddonsInfo = {
+	{422,4,1,1},
+	{470,4,1,1},
+	{468,2,1,1},
+	{433,6,1,1},
+	{437,6,1,1},
+	{509,0,0,0},
+	{487,0,1,1},
+	{497,0,1,1},
+	{453,0,1,1},
+	{416,4,1,1},
+	{411,4,1,1},
+	{500,4,1,1},
+	{522,2,1,1},
+}
+
+vehicleFuelTable = {
+	{422,80},
+	{470,100},
+	{468,30},
+	{433,140},
+	{437,140},
+	{509,0},
+	{487,60},
+	{497,60},
+	{453,60},
+	{416,100},
+	{411,80},
+	{500,60},
+	{522,50},
+}
+
+vehicleAddonsInfo = {
+	{422,4,1,1},
+	{470,4,1,1},
+	{468,2,1,1},
+	{433,6,1,1},
+	{437,6,1,1},
+	{509,0,0,0},
+	{487,0,1,1},
+	{497,0,1,1},
+	{453,0,1,1},
+	{416,4,1,1},
+	{411,4,1,1},
+	{500,4,1,1},
+	{522,2,1,1},
+}
+
+vehicleFuelInfo = {
+	{422,0.25},
+	{470,0.1},
+	{468,0.1},
+	{433,0.5},
+	{437,0.5},
+	{509,0},
+	{487,0.25},
+	{497,0.25},
+	{453,0.1},
+	{416,0.25},
+	{411,0.25},
+	{500,0.25},
+	{522,0.20},
+}	
+	
+
 
 
 -- List item;
@@ -129,6 +200,7 @@ Item_scruffyburgers = "Scruff Burgers"
 -- Car parts
 Item_car_tire = "Tire"
 Item_car_engine = "Engine"
+Item_car_parts = "Tank Parts"
 
 -- Skins
 Item_skin_camo = "Camo Skin"
@@ -238,6 +310,7 @@ tabelALL = {
 {Item_rawmeat},
 {Item_car_tire},
 {Item_car_engine},
+{Item_car_parts},
 {Item_tent},
 {Item_skin_camo},
 {Item_skin_civilian},
@@ -548,7 +621,7 @@ itemTable = {
 }	
 	
 	
-	outputDebugString ( "MTA:DayZ Simplified | config_s end" )
+outputDebugString ( "MTA:DayZ Simplified | config_s end" )
 	
 	
 	
