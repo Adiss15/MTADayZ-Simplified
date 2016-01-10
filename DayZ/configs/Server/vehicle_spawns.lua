@@ -199,7 +199,7 @@ lootItems = {
 function getVehicleAddonInfos (id)
 	for i,veh in ipairs(vehicleAddonsInfo) do
 		if veh[1] == id then
-			return veh[2],veh[3]
+			return veh[2],veh[3], veh[4]
 		end
 	end
 end
@@ -361,13 +361,7 @@ function respawnDayZVehicle(id,x,y,z,veh,col,max_slots)
 end
 
 
-function getVehicleAddonInfos (id)
-	for i,veh in ipairs(vehicleAddonsInfo) do
-		if veh[1] == id then
-			return veh[2],veh[3]
-		end
-	end
-end
+
 
 function onPlayerEnterDayzVehicle(veh,seat)
 	local col = getElementData(veh,"parent")
@@ -411,9 +405,12 @@ function onPlayerExitDayzVehicle(veh,seat)
 end
 addEventHandler ( "onPlayerVehicleExit", getRootElement(), onPlayerExitDayzVehicle )
 
-function getVehicleFuelRemove (id)
+function getVehicleFuelRemove (id,col)
 	for i,veh in ipairs(vehicleFuelInfo) do
 		if veh[1] == id then
+			if not  getElementData(col,"Parts_inVehicle") == 1 then
+				return veh[2]*1.3
+			end
 			return veh[2]
 		end
 	end
