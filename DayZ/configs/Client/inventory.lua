@@ -511,40 +511,11 @@ local current_SLOTS = 0
 	return false
 end
 
-vehicleAddonsInfo = {
--- {Model ID, Tires, Engine}
-{422,4,1},
-{470,4,1},
-{468,2,1},
-{433,6,1},
-{437,6,1},
-{509,0,0},
-{487,0,1},
-{497,0,1},
-{453,0,1},
-}
 
-function getVehicleAddonInfos (id)
-	for i,veh in ipairs(vehicleAddonsInfo) do
-		if veh[1] == id then
-			return veh[2],veh[3]
-		end
-	end
-end
+
 
 --OTHER ITEM STUFF
-vehicleFuelTable = {
--- {Model ID, Max Fuel}
-{422,80},
-{470,100},
-{468,30},
-{433,140},
-{437,140},
-{509,0},
-{487,60},
-{497,60},
-{453,60},
-}
+
 
 function getVehicleMaxFuel(loot)
 	local modelID = getElementModel(getElementData(loot,"parent"))
