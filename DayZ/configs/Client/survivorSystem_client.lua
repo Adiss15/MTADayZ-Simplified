@@ -938,10 +938,10 @@ if getElementData(getLocalPlayer(),"logedin") then
         local fuel = getElementData(getElementData(veh,"parent"),"fuel")
         local needengine = getElementData(veh,"needengines")
         local needtires = getElementData(veh,"needtires")
- 
+      local needparts = getElementData(veh,"needparts")
         local engine = getElementData(getElementData(veh,"parent"),"Engine_inVehicle") or 0
         local tires = getElementData(getElementData(veh,"parent"),"Tire_inVehicle") or 0
- 
+      local parts = getElementData(getElementData(veh,"parent"),"Parts_inVehicle") or 0
         local vehHealth = getElementHealth(getPedOccupiedVehicle(localPlayer))
         local x,y,z = getElementVelocity(getPedOccupiedVehicle(localPlayer))
         local vehSpeed = math.floor(((x^2 + y^2 + z^2)^(0.5))*180)
@@ -973,6 +973,15 @@ if getElementData(getLocalPlayer(),"logedin") then
             dxDrawRectangle(34,249,25,13, tocolor(171,16,3,255))
             dxDrawText("TIRE",36,250,5,5,tocolor(0,0,0,231),0.9,"default-bold")
         end
+      --TANK PARTS
+        if parts == needparts then
+            dxDrawRectangle(34,272,25,13,tocolor(89,161,58,255))
+          dxDrawText ("TKP",36,272,5,5,tocolor(0,0,0,231),0.9,"default-bold")
+        else
+           dxDrawRectangle(34,272,25,13,tocolor(171,15,5,255))
+         dxDrawText ("TKP",36,272,5,5,tocolor(0,0,0,231),0.9,"default-bold")
+        end
+        FUEL
         if fuel == maxfuel then
             dxDrawRectangle(15,213,13,115,tocolor(0,0,0,150),true)
             dxDrawRectangle(16,214,10,115,tocolor(78,138,51,255),true)
@@ -1025,11 +1034,6 @@ if getElementData(getLocalPlayer(),"logedin") then
  text = string.gsub(getPlayerName(playerTarget), '#%x%x%x%x%x%x', '' )
  end
  local w = dxGetTextWidth(text,distance*0.033,"default-bold")
- dxDrawText (text,x-(w/2),y,x-(w/2), y, tocolor ( 100, 255, 100, 200 ), distance*0.033, "default-bold" )
- 
-end 
-end
-addEventHandler ( "onClientRender", getRootElement(), updateIcons )
 
 
 
