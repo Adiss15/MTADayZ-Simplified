@@ -104,6 +104,7 @@ inventoryItems = {
 {Item_rawmeat,1},
 {Item_car_tire,2},
 {Item_car_engine,5},
+{Item_car_parts,3},
 {Item_tent,3,"Pitch a tent"},
 {Item_skin_camo,1,"Put clothes on"}, -- [ID:0000005 - Several grammar + spelling mistakes and typos] //L
 {Item_skin_civilian,1,"Put clothes on"}, -- [ID:0000005 - Several grammar + spelling mistakes and typos] //L
@@ -569,7 +570,9 @@ local itemName = guiGridListGetItemText ( gridlistItems["inventory"], guiGridLis
 			if isVehicle and not isTent then
 				local veh = getElementData(isPlayerInLoot(),"parent")
 				local tires,engine = getVehicleAddonInfos (getElementModel(veh))
-				if itemName == Item_car_tire and (getElementData(isPlayerInLoot(),"Tire_inVehicle") or 0) < tires  or itemName == Item_car_engine and (getElementData(isPlayerInLoot(),"Engine_inVehicle") or 0)  < engine then
+				if itemName == Item_car_tire and (getElementData(isPlayerInLoot(),"Tire_inVehicle") or 0) < tires  or
+				   itemName == Item_car_engine and (getElementData(isPlayerInLoot(),"Engine_inVehicle") or 0)  < engine or
+				   itemName == Item_car_parts and (getElementData(isPlayerInLoot(),"Parts_inVehicle") or 0)  < engine then
 					triggerEvent("onPlayerMoveItemOutOFInventory",getLocalPlayer(),itemName.."_inVehicle",isPlayerInLoot())
 					playerMovedInInventory = true
 					setTimer(function()
@@ -685,8 +688,18 @@ if not getElementData(loot,"itemloot") and getElementType(getElementData(loot,"p
 end
 end
 itemName2 = itemName
-if itemName == "Tire_inVehicle" then itemName2 = Item_car_tire end
-if itemName == "Engine_inVehicle" then itemName2 = Item_car_engine end
+if itemName == "Tire_inVehicle" then 
+   itemName2 = Item_car_tire
+ end
+ 
+if itemName == "Engine_inVehicle" then
+   itemName2 = Item_car_engine
+end
+
+if itemName == "Parts_inVehicle" then
+   itemName2 = Item_car_parts
+end
+
 if (getElementData(getLocalPlayer(),itemName2) or 0)/itemPlus < 1 then
 	triggerEvent ("displayClientInfo", getLocalPlayer(),"Inventory","Can't drop this!",255,22,0) -- [ID:0000005 - Several grammar + spelling mistakes and typos] //L
 return
@@ -704,6 +717,7 @@ end
 	end
 	if itemName == "Tire_inVehicle" then itemName = Item_car_tire end
 	if itemName == "Engine_inVehicle" then itemName = Item_car_engine end
+	if itemName == "Parts_inVehicle" then itemName = Item_car_parts end
 	setElementData(getLocalPlayer(),itemName,getElementData(getLocalPlayer(),itemName)-itemPlus)
 	if loot and getElementData(loot,"itemloot") then
 		triggerServerEvent("refreshItemLoot",getRootElement(),loot,getElementData(loot,"parent"))
