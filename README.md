@@ -9,6 +9,17 @@ http://DevUnit.org
 _________
 CHANGE LOG
 _________
+Version 1.3
+Unbug vehicles
+Info: 100%
+
+Add TankParts
+Info: 100%
+
+For add new vehicles have edit one archive
+(config_s)
+Info: 100%
+
 
 Version 1.2
 
