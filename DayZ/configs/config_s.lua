@@ -376,6 +376,7 @@ itemTable = {
 ----------------------
 ["farm"] = {
 {Item_woodpile,1463,0.4,0,13},
+{Item_car_parts,1008,1,0.8,2},
 {Item_medic_bandage,1578,0.5,0,4},
 {Item_food_waterbottle,2683,1,0,6},
 {Item_food_pastacan,2770,1,0,6},
@@ -458,6 +459,7 @@ itemTable = {
 {Item_medic_painkiller,2709,3,0,4},
 {Item_emptysoda,2673,0.5,0,12},
 {Item_scruffyburgers,2675,0.5,0,12},
+{Item_car_parts,1008,1,0.8,2},
 {weapon_specially_grenade,342,1,0,0.5},
 {weapon_primary_sawnoff,350,1,90,2.3},
 {weapon_primary_spaz12,351,1,90,2.3},
@@ -497,6 +499,7 @@ itemTable = {
 {Item_wirefence,933,0.25,0,7},
 {Item_toolbelt_toolbox,2969,0.5,0,3},
 {Item_car_tire,1073,1,0,4},
+{Item_car_parts,1008,1,0.8,2},
 {Item_car_engine,929,0.3,0,3.5},
 {weapon_primary_shotgun,349,1,90,3},
 {Item_food_waterbottle,2683,1,0,4},
@@ -611,6 +614,7 @@ itemTable = {
 {"Alice Pack",1248,1,0,1.5},
 {"Coyote Backpack",1252,1,0,0.7},
 {Item_car_tire,1073,1,0,1},
+{Item_car_parts,1008,1,0.8,2},
 {Item_medic_morphine,1579,1,0,2},
 {Item_skin_civilian,1241,2,0,3.5},
 {Item_toolbelt_map,1277,0.8,90,4},
