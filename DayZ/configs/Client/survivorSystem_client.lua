@@ -981,7 +981,7 @@ if getElementData(getLocalPlayer(),"logedin") then
            dxDrawRectangle(34,272,25,13,tocolor(171,15,5,255))
          dxDrawText ("TKP",36,272,5,5,tocolor(0,0,0,231),0.9,"default-bold")
         end
-        FUEL
+     --   FUEL
         if fuel == maxfuel then
             dxDrawRectangle(15,213,13,115,tocolor(0,0,0,150),true)
             dxDrawRectangle(16,214,10,115,tocolor(78,138,51,255),true)
