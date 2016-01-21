@@ -174,162 +174,260 @@ end
 addEventHandler ( "onResourceStop", getRootElement(), saveAccounts2 )
 
 
+--## Copyright (c) 2015 Grosu `PoWeR` Mihaita.
+--## MTA:DayZ Backup System v1.5.
 
+local dbType = "SQLite";  --Here set your db type, "MySQL" or "SQLite" <!>
+local dbName = "";        --Your database name <!>
+local dbHost = "";		  --Your hostname/IP <!>
+local dbUser = "";		  --Username for database <!>
+local dbPass = "";		  --Password for database <!>
+local dbPort = 1234; 	  --This is an port exemple CHANGE IT <!>
 
-function saveallvehicles(ps,command)
-	counter = 0
-	counterTent = 0
-	--delete Accounts 
-	local vehicleManager = getAccount("vehicleManager","ds4f9$")
-	--for i = 1, (getAccountData(vehicleManager,"vehicleamount") or 0) do
-		--local account = getAccount("vehicle_number_"..i,"ds4f9$")
-		--if not account then break end
-		--removeAccount (account)
-	--end
-	--new Accounts + set
-	for i, col in ipairs (getElementsByType("colshape")) do
-		local veh = getElementData(col,"vehicle")
-		local helicrash = getElementData(col,"helicrash")
-		local hospitalbox = getElementData(col,"hospitalbox")
-		local tent = getElementData(col,"tent")
-		if veh and not helicrash or veh and not hospitalbox then
-		if tent then
-			counterTent = counterTent +1
-			account = getAccount("tent_number_"..counterTent,"ds4f9$") or false
-			if not account then
-				account = addAccount("tent_number_"..counterTent,"ds4f9$")
-			end	
-			local tent = getElementData(col,"parent")
-			local x,y,z = getElementPosition(tent)
-			local rx,ry,rz = getElementRotation(tent)
-			setAccountData(account,"last_x",x)
-			setAccountData(account,"last_y",y)
-			setAccountData(account,"last_z",z)
-			setAccountData(account,"last_rx",rx)
-			setAccountData(account,"last_ry",ry)
-			setAccountData(account,"last_rz",rz)
-			for i, data in ipairs(tabelALL) do 
-				setAccountData(account,data[1],getElementData(col,data[1]))
+local last_veh_id = 0;	  --Don't edit here <!>
+local last_tent_id = 0;   --Don't edit here <!>
+
+local itemsDataTable = { -- If your server have different items be sure you imported your item table here!
+{weapon_primary_m4},
+{weapon_primary_sniper},
+{weapon_primary_shotgun},
+{weapon_primary_spaz12},
+{weapon_primary_sawnoff},
+{weapon_primary_ak47},
+{weapon_primary_contryrifle},
+{weapon_secondary_pistol},
+{weapon_secondary_sdpistol},
+{weapon_secondary_uzi},
+{weapon_secondary_mp5},
+{weapon_secondary_deserteagle},
+{weapon_melee_knife},
+{weapon_melee_katana},
+{weapon_melee_baseball},
+{weapon_melee_shovel},
+{weapon_melee_golf},
+{weapon_specially_parachute},
+{weapon_specially_teargas},
+{weapon_specially_grenade},
+{weapon_specially_binoculares},
+{weapon_ammo_pistol},
+{weapon_ammo_sdpistol},
+{weapon_ammo_deserteagle},
+{weapon_ammo_uzi},
+{weapon_ammo_mp5},
+{weapon_ammo_ak},
+{weapon_ammo_m4},
+{weapon_ammo_shotgun},
+{weapon_ammo_sawnoff},
+{weapon_ammo_spaz12},
+{weapon_ammo_sniper},
+{weapon_ammo_contryrifle},
+{Item_food_waterbottle},
+{Item_food_pastacan},
+{Item_food_beanscan},
+{Item_food_burger},
+{Item_food_pizza},
+{Item_food_Soda},
+{Item_food_milk},
+{Item_food_coockedmeat},
+{Item_woodpile},
+{Item_medic_bandage},
+{Item_medic_medickit},
+{Item_medic_heatpack},
+{Item_medic_painkiller},
+{Item_medic_morphine},
+{Item_medic_bloodbag},
+{Item_wirefence},
+{Item_emptygascanister},
+{Item_fullgascanister},
+{Item_roadflare},
+{Item_rawmeat},
+{Item_car_tire},
+{Item_car_engine},
+{Item_car_parts},
+{Item_tent},
+{Item_skin_camo},
+{Item_skin_civilian},
+{Item_skin_Survivor}, 
+{Item_skin_ghilliesuit}, 
+{Item_emptywaterbottle}, 
+{Item_emptysoda},
+{Item_scruffyburgers},
+{"Assault Pack (ACU)"},
+{"Alice Pack"},
+{"Czech Backpack"},
+{"Coyote Backpack"},
+{Item_toolbelt_ng_goggles},
+{Item_toolbelt_infrared},
+{Item_toolbelt_map},
+{Item_toolbelt_matches}, 
+{Item_toolbelt_watch},
+{Item_toolbelt_gps},
+{Item_toolbelt_toolbox},
+{Item_toolbelt_radiodevice}
+};
+
+function noteAdmins(theAlert)
+	for _,v in ipairs(getElementsByType("player")) do
+		if (isObjectInACLGroup("user."..getAccountName(getPlayerAccount(v)), aclGetGroup("Admin"))) then
+			outputChatBox("#FF0000[Backup]: #FFFFFF"..tostring(theAlert), v, 255, 255, 255,  true);
+		end
+	end
+end
+
+if (dbType == "MySQL") then
+	db = dbConnect("mysql", "dbname="..dbName..";host="..dbHost..";port="..dbPort, dbUser, dbPass, "share=1");
+	dbExec(db, "CREATE TABLE IF NOT EXISTS vehicles(model, x, y, z, rX, rY, rZ, slots, fuel, engines, moving, parts, items, id)");
+	dbExec(db, "CREATE TABLE IF NOT EXISTS tents(model, x, y, z, rX, rY, rZ, slots, scale, items, id)");
+	noteAdmins("Database connected to MySQL!");
+elseif (dbType == "SQLite") then
+	db = dbConnect("sqlite", "database.db");
+	dbExec(db, "CREATE TABLE IF NOT EXISTS vehicles(model, x, y, z, rX, rY, rZ, slots, fuel, engines, moving, parts, items, id)");
+	dbExec(db, "CREATE TABLE IF NOT EXISTS tents(model, x, y, z, rX, rY, rZ, slots, scale, items, id)");
+	noteAdmins("Database connected to SQLite!");
+else
+	noteAdmins("Error: `dbType` wrong attribute!");
+	return false;
+end
+
+function backup_vehs()
+	dbExec(db, "DELETE FROM vehicles");
+	local vehicleCounter = 0;
+	for _,veh in ipairs(getElementsByType("vehicle")) do
+		if (not getElementData(veh, "helicrash") and not getElementData(veh, "deadVehicle")) then
+			local col = getElementData(veh, "parent");
+			if (col and getElementType(col) == "colshape") then
+				local model = getElementModel(veh);
+				local x, y, z = getElementPosition(veh);
+				local rX, rY, rZ = getElementRotation(veh);
+				local slots = getElementData(col, "MAX_Slots") or 20;
+				local fuel = getElementData(col, "fuel") or 0;
+				local moving = getElementData(col, "Tire_inVehicle") or 0;
+				local engines = getElementData(col, "Engine_inVehicle") or 0;
+				local parts = getElementData(col, "Parts_inVehicle") or 0;
+				local items = {};
+				vehicleCounter = vehicleCounter + 1;
+				for _,v in ipairs(itemsDataTable) do
+					local quantity = getElementData(col, v[1]) or 0;
+					if (quantity > 0) then
+						table.insert(items, {v[1], quantity});
+					end
+				end
+				dbExec(db, "INSERT INTO vehicles(model, x, y, z, rX, rY, rZ, slots, fuel, engines, moving, parts, items, id) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)", model, x, y, z, rX, rY, rZ, slots, fuel, engines, moving, parts, toJSON(items), vehicleCounter)
 			end
-		else 
-		counter = counter +1
-		account = getAccount("vehicle_number_"..counter,"ds4f9$") or false
-		if not account then
-			account = addAccount("vehicle_number_"..counter,"ds4f9$")
-		end	
-			setAccountData(account,"spawn_x",getElementData(col,"spawn")[2])
-			setAccountData(account,"spawn_y",getElementData(col,"spawn")[3])
-			setAccountData(account,"spawn_z",getElementData(col,"spawn")[4])
-				for i, data in ipairs(tabelALL) do 
-					setAccountData(account,data[1],getElementData(col,data[1]))
-				end
-		local vehicle = getElementData(col,"parent")
-		local model = getElementModel(vehicle)
-		local x,y,z = getElementPosition(vehicle)
-		local rx,ry,rz = getElementRotation(vehicle)
-		local health = getElementHealth(vehicle)
-		setAccountData(account,"last_x",x)
-		setAccountData(account,"last_y",y)
-		setAccountData(account,"last_z",z)
-		setAccountData(account,"last_rx",rx)
-		setAccountData(account,"last_ry",ry)
-		setAccountData(account,"last_rz",rz)
-		setAccountData(account,"health",health)
-		setAccountData(account,"model",model)
-		setAccountData(account,"isExploded",getElementData(vehicle,"isExploded") or false)
 		end
-		end
-		setAccountData(vehicleManager,"vehicleamount",counter)
-		setAccountData(vehicleManager,"tentamount",counterTent)
 	end
+	noteAdmins("Vehicles saved ["..vehicleCounter.."]");
 end
-addEventHandler("onResourceStop", getResourceRootElement(getThisResource()), saveallvehicles)
 
-function doBackup ()
-		outputChatBox ("Server Backup...",getRootElement(),27, 89, 224,true)
-		saveallvehicles()
-		outputChatBox ("Done!",getRootElement(),27, 89, 224,true)
-end
-function checkDoBackup ()
-	if gameplayVariables["backupenabled"] then
-		setTimer(doBackup,86400000,0)
-	end
-end
-checkDoBackup()
-
-function createVehicleOnServerStart()
-	local vehicleManager = getAccount("vehicleManager","ds4f9$")
-	for i = 1, (getAccountData(vehicleManager,"vehicleamount") or 0) do
-		wastedVehicle = false
-		vehicle = getAccount("vehicle_number_"..i,"ds4f9$")
-		if not vehicle then break end
-		if getAccountData(vehicle,"isExploded") == true then
-			setAccountData(vehicle,"health",1000)
-			wastedVehicle = true
-		end
-			local veh = createVehicle(getAccountData(vehicle,"model"),getAccountData(vehicle,"last_x"),getAccountData(vehicle,"last_y"),getAccountData(vehicle,"last_z"),getAccountData(vehicle,"last_rx"),getAccountData(vehicle,"last_ry"),getAccountData(vehicle,"last_rz"))
-			vehCol = createColSphere(getAccountData(vehicle,"last_x"),getAccountData(vehicle,"last_y"),getAccountData(vehicle,"last_z"),4)
-			attachElements ( vehCol, veh, 0, 0, 0 )
-			setElementData(vehCol,"parent",veh)
-			setElementData(veh,"parent",vehCol)
-			setElementData(vehCol,"vehicle",true)
-			setElementData(vehCol,"MAX_Slots",getAccountData(vehicle,"MAX_Slots"))
-			setElementHealth(veh,getAccountData(vehicle,"health"))
-		--vehicle_indentifikation
-			xxx,yyy,zzz = getAccountData(vehicle,"spawn_x"),getAccountData(vehicle,"spawn_y"),getAccountData(vehicle,"spawn_z")
-			setElementData(vehCol,"spawn",{getAccountData(vehicle,"model"),xxx,yyy,zzz})
-			if wastedVehicle then
-				if getAccountData(vehicle,"model") == 497 then
-					item_id = math.random(table.size(hunterSpawns))
-					xxx,yyy,zzz = hunterSpawns[item_id][1],hunterSpawns[item_id][2],hunterSpawns[item_id][3]
-				end
-				if getAccountData(vehicle,"model") == 487 then
-					local item_id = math.random(table.size(maverikSpawns))
-					x,y,z = maverikSpawns[item_id][1],maverikSpawns[item_id][2],maverikSpawns[item_id][3]
-				end
-				setElementPosition(veh,xxx,yyy,zzz+1)
-				setElementRotation(veh,0,0,0)
-				--Engine + Tires
-				local tires,engine = getVehicleAddonInfos (getElementModel(veh))
-				setElementData(vehCol,"Tire_inVehicle",math.random(0,tires))
-				setElementData(vehCol,"Engine_inVehicle",math.random(0,engine))
-			end
-		--others
-			setElementData(vehCol,"fuel",getAccountData(vehicle,"fuel"))
-	if not wastedVehicle then
-		for i, data in ipairs(tabelALL) do 
-			setElementData(vehCol,data[1],getAccountData(vehicle,data[1]))
-		end
-	else
-		if getElementModel(veh) == 433 or getElementModel(veh) == 470 then
-			for i,items in ipairs(lootItems["helicrashsides"]) do
-				local randomNumber = math.random(1,10)
-				if randomNumber == 5 then
-					setElementData(vehCol,items[1],math.random(1,2))
+function backup_tents()
+	dbExec(db, "DELETE FROM tents");
+	local tentsCounter = 0;
+	for _,col in ipairs(getElementsByType("colshape")) do
+		if (getElementData(col, "tent")) then
+			local tent = getElementData(col, "parent");
+			local x, y, z = getElementPosition(tent);
+			local rX, rY, rZ = getElementRotation(tent);
+			local model = getElementModel(tent);
+			local slots = getElementData(col, "MAX_Slots") or 100;
+			local scale = getObjectScale(tent);
+			local items = {};
+			tentsCounter = tentsCounter + 1;
+			for _,v in ipairs(itemsDataTable) do
+				local quantity = getElementData(col, v[1]) or 0;
+				if (quantity > 0) then
+					table.insert(items, {v[1], quantity});
 				end
 			end
-		end	
-		setElementData(vehCol,"fuel",10)
-	end
-	end
-	for i = 1, (getAccountData(vehicleManager,"tentamount") or 0) do
-		tentData = getAccount("tent_number_"..i,"ds4f9$")
-		if not tentData then break end
-		tent = createObject(3243,getAccountData(tentData,"last_x"),getAccountData(tentData,"last_y"),getAccountData(tentData,"last_z"),0,0,(getAccountData(tentData,"last_rz") or 0))
-		setObjectScale(tent,1.3)
-		tentCol = createColSphere(getAccountData(tentData,"last_x"),getAccountData(tentData,"last_y"),getAccountData(tentData,"last_z"),4)
-		attachElements ( tentCol, tent, 0, 0, 0 )
-		setElementData(tentCol,"parent",tent)
-		setElementData(tent,"parent",tentCol)
-		setElementData(tentCol,"tent",true)
-		setElementData(tentCol,"vehicle",true)
-		setElementData(tentCol,"MAX_Slots",100)
-		for i, data in ipairs(tabelALL) do 
-			setElementData(tentCol,data[1],getAccountData(tentData,data[1]))
+			dbExec(db, "INSERT INTO tents(model, x, y, z, rX, rY, rZ, slots, scale, items, id) VALUES(?,?,?,?,?,?,?,?,?,?,?)", model, x, y, z, rX, rY, rZ, slots, scale, toJSON(items), tentsCounter)
 		end
 	end
+	noteAdmins("Tents saved ["..tentsCounter.."]");
 end
-addEventHandler("onResourceStart", getResourceRootElement(getThisResource()), createVehicleOnServerStart)
+
+function create_veh(model, x, y, z, rX, rY, rZ, slots, fuel, engines, moving, parts, items, id)
+	local veh = createVehicle(model, x, y, z);
+	local vehCol = createColSphere(x + 5, y, z, 4);
+	setElementRotation(veh, rX, rY, rZ);
+	attachElements(vehCol, veh, 0, 0, 0);
+	setElementData(vehCol, "parent", veh);
+	setElementData(veh, "parent", vehCol);
+	setElementData(vehCol, "vehicle", true);
+	setElementData(vehCol, "MAX_Slots", tonumber(slots));
+	setElementData(vehCol, "Tire_inVehicle", tonumber(moving));
+	setElementData(vehCol, "Engine_inVehicle", tonumber(engines));
+	setElementData(vehCol, "Parts_inVehicle", tonumber(parts));
+	setElementData(vehCol, "spawn", {model, x, y, z});
+	setElementData(vehCol, "fuel", tonumber(fuel));
+	for _,v in ipairs(fromJSON(items)) do
+		setElementData(vehCol, v[1], v[2]);
+	end
+end
+
+function create_tent(model, x, y, z, rX, rY, rZ, slots, scale, items, id)
+	local tent = createObject(model, x, y, z);
+	local tentCol = createColSphere(x, y, z,  3);
+	setElementRotation(tent, rX, rY, rZ);
+	setObjectScale(tent, scale);
+	attachElements(tentCol, tent, 0, 0, 0);
+	setElementData(tentCol, "parent", tent);
+	setElementData(tent, "parent", tentCol);
+	setElementData(tentCol, "tent", true);
+	setElementData(tentCol, "vehicle", true);
+	setElementData(tentCol, "MAX_Slots", slots);
+	for _,v in ipairs(fromJSON(items)) do
+		setElementData(tentCol, v[1], v[2]);
+	end
+end
+
+function load_vehs(q)
+	if (q) then
+		local p = dbPoll(q, 0);
+		if (#p > 0) then
+			for _,d in pairs(p) do
+				last_veh_id = d["id"];
+				create_veh(d["model"], d["x"], d["y"], d["z"], d["rX"], d["rY"], d["rZ"], d["slots"], d["fuel"], d["engines"], d["moving"], d["parts"], d["items"], d["id"]);
+			end
+		end
+	end
+	noteAdmins("Vehicles loaded!");
+end
+
+function load_tents(q)
+	if (q) then
+		local p = dbPoll(q, 0);
+		if (#p > 0) then
+			for _,d in pairs(p) do
+				last_tent_id = d["id"];
+				create_tent(d["model"], d["x"], d["y"], d["z"], d["rX"], d["rY"], d["rZ"], d["slots"], d["scale"], d["items"], d["id"]);
+			end
+		end
+	end 
+	noteAdmins("Tents loaded!");
+end
+
+addEventHandler("onPlayerCommand", root, function(cmd)
+	if (isObjectInACLGroup("user."..getAccountName(getPlayerAccount(source)), aclGetGroup("Admin"))) then
+		if (cmd == "loadtents") then
+			dbQuery(load_tents, {}, db, "SELECT * FROM `tents`");
+		elseif (cmd == "loadvehs") then
+			dbQuery(load_vehs, {}, db, "SELECT * FROM `vehicles`");
+		elseif (cmd == "vehbk") then
+			backup_vehs();
+		elseif (cmd == "tentbk") then
+			backup_tents();
+		elseif (cmd == "togbk") then
+			if (isTimer(vehbkTimer) and isTimer(tentbkTimer)) then
+				killTimer(vehbkTimer);
+				killTimer(tentbkTimer);
+				noteAdmins(getPlayerName(source).."#FFFFFF stopped automatic backup!");
+			else
+				vehbkTimer = setTimer(backup_vehs, 30*60000, 0);
+				tentbkTimer = setTimer(backup_tents, 30*60000, 0);
+				noteAdmins(getPlayerName(source).."#FFFFFF started automatic backup!");
+			end
+		end
+	end
+end);
 
 outputDebugString ( "MTA:DayZ Simplified | login end" )
 
