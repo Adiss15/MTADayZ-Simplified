@@ -1,4 +1,4 @@
---[[
+DayZ/configs/Client/survivorSystem_client.lua--[[
 #---------------------------------------------------------------#
 ----*			MTA DayZ Simplified                 		*----
 ----* 			Nucleo: Marwin
@@ -875,6 +875,10 @@ end
 setTimer(checkZombies3,500,0)
 
 
+
+	
+	
+
 fading = 0
 fading2 = "up"
 local screenWidth,screenHeight = guiGetScreenSize()
@@ -886,53 +890,8 @@ if getElementData(getLocalPlayer(),"logedin") then
  elseif fading <= 255 and fading2 == "down" then
  fading = fading - 5
  end
- --Nametags
- local x,y,z = getElementPosition(getLocalPlayer())
- for i,player in ipairs(getElementsByType("player")) do
- setPlayerNametagShowing ( player, false )
- if player ~= getLocalPlayer() then
- local vehicle = getPedOccupiedVehicle(player)
-                local px,py,pz = getElementPosition (player)
-                local pdistance = getDistanceBetweenPoints3D ( x,y,z,px,py,pz )
-                if pdistance <= 2 then
-                    --Get screenposition
-                    local sx,sy = getScreenFromWorldPosition ( px, py, pz+0.95, 0.06 )
- if sx and sy then
- --Draw Name
- if getElementData(player,"bandit") then
- text = string.gsub(getPlayerName(player), '#%x%x%x%x%x%x', '' ).." (Bandit)"
- else
- text = string.gsub(getPlayerName(player), '#%x%x%x%x%x%x', '' )
- end
- local w = dxGetTextWidth(text,1.02,"default-bold")
- dxDrawText (text, sx-(w/2), sy, sx-(w/2), sy, tocolor ( 100, 255, 100, 200 ), 1.02, "default-bold" )
- end
- end
- end 
- end
- --Vehicletags
- local x,y,z = getElementPosition(getLocalPlayer())
- for i,veh in ipairs(getElementsByType("vehicle")) do
- local px,py,pz = getElementPosition (veh)
- local vehID = getElementModel(veh)
- local vehicle = getPedOccupiedVehicle(getLocalPlayer())
- if veh ~= vehicle then
- if vehID ~= 548 then
-                local pdistance = getDistanceBetweenPoints3D ( x,y,z,px,py,pz )
-                if pdistance <= 6 then
-                    --Get screenposition
-                    local sx,sy = getScreenFromWorldPosition ( px, py, pz+0.95, 0.06 )
- if sx and sy then
- --Draw Vehicle
- local w = dxGetTextWidth(getVehicleName(veh),1.02,"default-bold")
- dxDrawText ( getVehicleName(veh), sx-(w/2), sy, sx-(w/2), sy, tocolor ( 100, 255, 100, 200 ), 1.02, "default-bold" ) 
- end
- end
- end
- end
- end
- --VEHICLE INFO
-    local veh = getPedOccupiedVehicle (getLocalPlayer())
+ 
+     local veh = getPedOccupiedVehicle (getLocalPlayer())
     if veh then
         local maxfuel = getElementData(veh,"maxfuel")
         local fuel = getElementData(getElementData(veh,"parent"),"fuel")
@@ -1024,6 +983,52 @@ if getElementData(getLocalPlayer(),"logedin") then
             dxDrawLine(622,35,570,35,tocolor(89,161,58,255),2,true)
             dxDrawLine(569,36,569,8,tocolor(89,161,58,255),2,true)
     end
+ 
+ --Nametags
+ local x,y,z = getElementPosition(getLocalPlayer())
+ for i,player in ipairs(getElementsByType("player")) do
+ setPlayerNametagShowing ( player, false )
+ if player ~= getLocalPlayer() then
+ local vehicle = getPedOccupiedVehicle(player)
+                local px,py,pz = getElementPosition (player)
+                local pdistance = getDistanceBetweenPoints3D ( x,y,z,px,py,pz )
+                if pdistance <= 2 then
+                    --Get screenposition
+                    local sx,sy = getScreenFromWorldPosition ( px, py, pz+0.95, 0.06 )
+ if sx and sy then
+ --Draw Name
+ if getElementData(player,"bandit") then
+ text = string.gsub(getPlayerName(player), '#%x%x%x%x%x%x', '' ).." (Bandit)"
+ else
+ text = string.gsub(getPlayerName(player), '#%x%x%x%x%x%x', '' )
+ end
+ local w = dxGetTextWidth(text,1.02,"default-bold")
+ dxDrawText (text, sx-(w/2), sy, sx-(w/2), sy, tocolor ( 100, 255, 100, 200 ), 1.02, "default-bold" )
+ end
+ end
+ end 
+ end
+ --Vehicletags
+ local x,y,z = getElementPosition(getLocalPlayer())
+ for i,veh in ipairs(getElementsByType("vehicle")) do
+ local px,py,pz = getElementPosition (veh)
+ local vehID = getElementModel(veh)
+ local vehicle = getPedOccupiedVehicle(getLocalPlayer())
+ if veh ~= vehicle then
+ if vehID ~= 548 then
+                local pdistance = getDistanceBetweenPoints3D ( x,y,z,px,py,pz )
+                if pdistance <= 6 then
+                    --Get screenposition
+                    local sx,sy = getScreenFromWorldPosition ( px, py, pz+0.95, 0.06 )
+ if sx and sy then
+ --Draw Vehicle
+ local w = dxGetTextWidth(getVehicleName(veh),1.02,"default-bold")
+ dxDrawText ( getVehicleName(veh), sx-(w/2), sy, sx-(w/2), sy, tocolor ( 100, 255, 100, 200 ), 1.02, "default-bold" ) 
+ end
+ end
+ end
+ end
+ end
  if not playerTarget then return end
  local x,y,z = getElementPosition(playerTarget)
  local x,y,distance = getScreenFromWorldPosition (x,y,z+0.5)
@@ -1034,7 +1039,11 @@ if getElementData(getLocalPlayer(),"logedin") then
  text = string.gsub(getPlayerName(playerTarget), '#%x%x%x%x%x%x', '' )
  end
  local w = dxGetTextWidth(text,distance*0.033,"default-bold")
-
+ dxDrawText (text,x-(w/2),y,x-(w/2), y, tocolor ( 100, 255, 100, 200 ), distance*0.033, "default-bold" )
+ 
+end 
+end
+addEventHandler ( "onClientRender", getRootElement(), updateIcons )
 
 
 
