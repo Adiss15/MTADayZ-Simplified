@@ -1,4 +1,4 @@
-DayZ/configs/Client/survivorSystem_client.lua--[[
+--[[
 #---------------------------------------------------------------#
 ----*			MTA DayZ Simplified                 		*----
 ----* 			Nucleo: Marwin
